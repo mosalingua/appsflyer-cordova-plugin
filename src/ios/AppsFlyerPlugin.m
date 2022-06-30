@@ -6,6 +6,9 @@
 #       import <FBSDKAppLinkUtility.h>
 #  endif
 #endif
+//Modified Paulo
+#import <AppTrackingTransparency/AppTrackingTransparency.h>
+#import <AdSupport/AdSupport.h>
 
 @implementation AppsFlyerPlugin
 
@@ -22,6 +25,36 @@ static NSString *const NO_WAITING_TIME = @"You need to set waiting time for ATT"
  BOOL isConversionData = NO;
 
 - (void)pluginInitialize{}
+
+//Modified Paulo
+//get authorization status (from plugin JS)
+- (void)getTrackingAuthorizationStatus:(CDVInvokedUrlCommand*)command {
+    
+    BOOL status = false;
+    if (@available(iOS 14, *)) {
+       status = [self checkTrackingAuthorization: ATTrackingManager.trackingAuthorizationStatus];
+    }
+    CDVPluginResult *pluginResult = [CDVPluginResult
+                                        resultWithStatus: CDVCommandStatus_OK
+                                        messageAsBool:status
+                                        ];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (BOOL)checkTrackingAuthorization:(ATTrackingManagerAuthorizationStatus) status  API_AVAILABLE(ios(14)){
+    return status == ATTrackingManagerAuthorizationStatusAuthorized;
+}
+
+- (void)requestIDFA {
+    if (@available(iOS 14, *)) {
+        [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
+            // Tracking authorization completed. Start loading ads here.
+            // [self loadAd];
+        }];
+    } else {
+        // Fallback on earlier versions
+    }
+}
 
 /**
 *   initialize the SDK.
@@ -83,6 +116,10 @@ static NSString *const NO_WAITING_TIME = @"You need to set waiting time for ATT"
 #ifndef AFSDK_NO_IDFA
         //Here we set the time that the sdk will wait before he starts the launch. we take the time from the 'option' object in the app's index.js
         if (@available(iOS 14, *)) {
+            BOOL status = [self checkTrackingAuthorization: ATTrackingManager.trackingAuthorizationStatus];
+            if(!status) {
+                [self requestIDFA];
+            }
             if (waitForATTUserAuthorization != 0 && waitForATTUserAuthorization != nil){
                 [[AppsFlyerLib shared] waitForATTUserAuthorizationWithTimeoutInterval:waitForATTUserAuthorization.intValue];
                    }

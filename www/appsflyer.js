@@ -193,6 +193,14 @@ if (!window.CustomEvent) {
     };
 
     /**
+     * Get the current tracking authorization status
+     * successCB: Success callback that returns the status
+     */
+    AppsFlyer.prototype.getTrackingAuthorizationStatus = function (successCB) {
+        exec(successCB, null, 'AppsFlyerPlugin', 'getTrackingAuthorizationStatus', []);
+    };
+
+    /**
      * Used by advertisers to exclude specified networks/integrated partners from getting data
      * networks Comma separated array of partners that need to be excluded
      */

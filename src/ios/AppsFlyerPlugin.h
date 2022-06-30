@@ -5,6 +5,7 @@
 
 @interface AppsFlyerPlugin : CDVPlugin <UIApplicationDelegate, AppsFlyerLibDelegate, AppsFlyerDeepLinkDelegate>
 // @interface AppsFlyerPlugin : CDVPlugin <UIApplicationDelegate, AppsFlyerTrackerDelegate>
+
 - (void)initSdk:(CDVInvokedUrlCommand*)command;
 - (void)resumeSDK:(CDVInvokedUrlCommand *)command;
 - (void)setCurrencyCode:(CDVInvokedUrlCommand*)command;
@@ -27,6 +28,8 @@
 - (void)setDisableAdvertisingIdentifier:(CDVInvokedUrlCommand *)command;
 - (void)disableCollectASA:(CDVInvokedUrlCommand *)command;
 - (void)getSdkVersion:(CDVInvokedUrlCommand *)command;
+- (void)getTrackingAuthorizationStatus:(CDVInvokedUrlCommand *)command;
+- (void)requestIDFA;
 - (void)setOneLinkCustomDomains:(CDVInvokedUrlCommand *)command;
 @end
 
